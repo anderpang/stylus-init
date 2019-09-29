@@ -1,0 +1,276 @@
+use("./functions.js")
+
+vendor(prop,args...){
+    for prefix in $vendor-prefixes {
+        //prefixprop= '-' + prefix + '-' + prop;
+         prefixprop= '-%s-%s' % (prefix prop);
+        {prefixprop}:args;
+    }
+    {prop}:args;
+}
+
+vendor-value(prop,value){
+   for prefix in $vendor-prefixes {
+       //prefixvalue= '-' + prefix + '-' + value;
+       prefixvalue= '-%s-%s' % (prefix value);
+       add-property(prop,prefixvalue);
+   }
+}
+
+display(type){
+    prop=current-property[0];
+    if(type==flex){
+        //vendor-value(prop,flexbox);
+        //vendor-value(prop,box);
+        if($support-for-ie){
+            add-property(prop,-ms-flexbox);
+        }
+        add-property(prop,-webkit-box);
+    }
+    else if(type==inline-flex){
+        if($support-for-ie){
+            add-property(prop,-ms-inline-flexbox);
+        }
+        add-property(prop,-webkit-inline-box);
+    }
+    {prop}:type;
+}
+
+/****** flex *********/
+-flex-obsolete-direction(direction)
+  if box in $felx-vertion
+    if row-reverse == direction || column-reverse == direction
+      vendor(box-direction, reverse)
+
+    if row == direction || row-reverse == direction
+      vendor(box-orient, horizontal)
+    else if column == direction || column-reverse == direction
+      vendor(box-orient, vertical)
+
+-flex-obsolete-wrap(value)
+  if box in $felx-vertion
+    // WARN: wrap-reverse does not have a box equivalent. This will render in different manners
+    //    on box vs. flex values.
+    if wrap == value || wrap-reverse == value
+      vendor(box-lines, multiple)
+    else if nowrap == value
+      vendor(box-lines, single)
+
+flex-direction(direction)
+  // obsolete
+  -flex-obsolete-direction(direction)
+
+  // new
+  if flex in $felx-vertion
+    vendor(flex-direction, arguments)
+
+flex-wrap(value)
+  // obsolete
+  -flex-obsolete-wrap(value)
+
+  if flex in $felx-vertion
+    vendor(flex-wrap, arguments)
+
+flex-flow()
+  // obsolete
+  -flex-obsolete-direction(arguments[0])
+  -flex-obsolete-direction(arguments[1])
+  -flex-obsolete-wrap(arguments[0])
+  -flex-obsolete-wrap(arguments[1])
+
+  // new
+  if flex in $felx-vertion
+    vendor(flex-flow, arguments)
+
+
+order()
+  // obsolete
+  if box in $felx-vertion
+    vendor(box-ordinal-group, arguments)
+
+  // new
+  if flex in $felx-vertion
+    vendor(flex-order, arguments)
+    vendor(order, arguments)
+
+
+//
+// 7. Flexibility
+//    - http://www.w3.org/TR/css3-flexbox/#flexibility
+//
+flex-grow(growth)
+  // obsolete
+  if box in $felx-vertion
+    vendor(box-flex, growth)
+
+  // new
+  if flex in $felx-vertion
+    vendor(flex-grow, arguments)
+
+flex-basis()
+  if flex in $felx-vertion
+    vendor(flex-basis, arguments)
+
+flex-shrink()
+  if flex in $felx-vertion
+    vendor(flex-shrink, arguments)
+
+flex(growth)
+
+  // obsolete
+  if box in $felx-vertion
+    shrink = 1
+
+    if none == growth || initial == growth
+      // Well known values
+      shrink = 0 if none == growth
+      growth = 0
+    else if is-width(growth) == true
+      // Basis is defined as the first parameter
+      growth = arguments[1] || 0
+      shrink = arguments[2] if 3 <= length(arguments)
+    else if arguments[1] && is-width(arguments[1]) == false
+      // Growth is first and shrink is second
+      shrink = arguments[1]
+
+    // Since we can't make the distinction between growing and shrinking in the box model, take
+    // the one that provides the most flexibility.
+    vendor(box-flex, max(growth, shrink))
+
+  // new
+  if flex in $felx-vertion
+    vendor(flex, arguments)
+
+
+// converts the justification alignment
+-convert-justify(align)
+  if flex-start == align
+    return start
+  else if flex-end == align
+    return end
+  else if space-around == align
+    return distribute
+  else if space-between == align
+    return justify
+  else
+    return align
+
+//
+// 8. Alignment
+//    - http://www.w3.org/TR/css3-flexbox/#alignment
+//
+justify-content(align)
+  // obsolete
+  if box in $felx-vertion
+    vendor(box-pack, -convert-justify(align))
+
+  // new
+  if flex in $felx-vertion
+    vendor(flex-pack, -convert-justify(align))
+    vendor(justify-content, align)
+
+align-content(align)
+  // WARN: Obsolete spec does not allow for adjustment here
+  if flex in $felx-vertion
+    vendor(flex-line-pack, -convert-justify(align))
+    vendor(align-content, align)
+
+// converts alignment from 'flex' to normal value
+-convert-alignment(align)
+  if flex-start == align
+    return start
+  else if flex-end == align
+    return end
+  else
+    return align
+
+align-items(align)
+  // obsolete
+  if box in $felx-vertion
+    vendor(box-align, -convert-alignment(align))
+
+  // new
+  if flex in $felx-vertion
+    vendor(flex-align, -convert-alignment(align))
+    vendor(align-items, arguments)
+
+align-self(align)
+  // WARN: Obsolete spec does not allow for overriding alignment on individual items.
+  if flex in $felx-vertion
+    vendor(align-self, align,)
+    vendor(flex-item-align, -convert-alignment(align))
+
+/************* /flex *****************/
+
+// border-radius(){
+//     vendor("border-radius",arguments);
+// }
+
+transform(){
+    vendor(transform,arguments);
+}
+
+// box-shadow(){
+//     vendor("box-shadow",arguments);
+// }
+
+// replaceExpress(a,b,expr){
+//     expr=clone(expr);
+//     for e,i in expr {
+//        // p(e)
+//         if(e==a){
+//             expr[i]=b;
+//         }
+//     }
+
+//     expr;
+// }
+
+linear-gradient(){
+  prop=current-property[0];
+  expr=current-property[1];
+
+  for prefix in $vendor-prefixes {
+    p(prefix)
+    prefixexpr=jsLinearGradient(s("-%s-linear-gradient(%s)",prefix,arguments),clone(expr));
+    p(prefixexpr)
+    add-property(prop,prefixexpr);
+  }
+  s("linear-gradient(%s)",arguments);
+}
+
+radial-gradient(){
+  prop=current-property[0];
+  expr=current-property[1];
+
+  for prefix in $vendor-prefixes {
+    prefixexpr=jsLinearGradient(s("-%s-radial-gradient(%s)",prefix,arguments),clone(expr));
+    add-property(prop,prefixexpr);
+  }
+  s("radial-gradient(%s)",arguments);
+}
+
+
+//--inline 或 --use url
+// url(data){
+//     p(data)
+//     s("url(%s)",join("",data));
+// }
+
+
+/****************************** 快捷方式区 ***********************/
+bg(){
+  background:arguments;
+}
+bgi(){
+  background-image:arguments;
+}
+bgc(){
+  background-color:arguments;
+}
+bgl(){
+  background:linear-gradient(arguments);
+}
+bgr(){
+  background:radial-gradient(arguments); 
+}
