@@ -1,0 +1,46 @@
+.n,
+.bar {
+  font-style: normal;
+}
+.tc,
+.bar {
+  text-align: center;
+}
+body {
+  -webkit-transform: translate(0, 0);
+      -ms-transform: translate(0, 0);
+          transform: translate(0, 0);
+  background-color: #fff;
+}
+.nav {
+  height: 0.45rem;
+}
+.box {
+  background: -webkit-gradient(linear, left top, right top, from(#f00), to(#008000));
+  background: -o-linear-gradient(left, #f00, #008000);
+  background: linear-gradient(to right, #f00, #008000);
+}
+.bar {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100em;
+  height: 2em;
+}
+@-webkit-keyframes aima {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes aima {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

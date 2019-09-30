@@ -1,0 +1,30 @@
+@import "./stylus-init2/init.styl";
+
+.n{font-style:normal;}
+.tc{text-align:center;}
+
+body{
+    transform:translate(0,0);
+    bgc:white;
+}
+.nav{
+    height: $nav-height;
+}
+.box{
+    bgl:to right,red,green;
+}
+
+.bar{
+    @extend .n,.tc;
+    display:flex;
+    width:100em;
+    height:2em;
+}
+
+
+@keyframes aima{
+   0% {opacity:0}
+   to {opacity:1}
+}
+
+
